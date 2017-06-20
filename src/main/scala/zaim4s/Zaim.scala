@@ -1,6 +1,8 @@
 package zaim4s
 
 
+import java.time.LocalDate
+
 import dispatch._
 import dispatch.oauth._
 import org.asynchttpclient.oauth.{ConsumerKey, RequestToken}
@@ -11,33 +13,85 @@ import scala.concurrent.ExecutionContext
 
 
 case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
+  import Zaim.OptionValueMapOps
 
-  private val baseUrl:String = "https://api.zaim.net"
+  private[this] def baseUrl = url("https://api.zaim.net")
 
   def verifyUser(implicit ec: ExecutionContext): Future[VerifyUserResponse] =
     request[VerifyUserResponse](
-      url(s"$baseUrl/v2/home/user/verify").GET
+      (baseUrl / "v2/home/user/verify").GET
     )
 
-  def getMoneys(condition: GetMoneysRequestCondition)(implicit ec: ExecutionContext): Future[GetMoneysResponse] =
+  def getMoneys(
+      categoryId: Option[Int] = None,
+      genreId: Option[Int] = None,
+      mode: Option[Mode] = None,
+      order: Option[String] = None,
+      startDate: Option[LocalDate] = None,
+      endDate: Option[LocalDate] = None,
+      page: Int = 1,
+      limit: Int = 20
+  )(implicit ec: ExecutionContext): Future[GetMoneysResponse] =
     request[GetMoneysResponse](
-      url(s"$baseUrl/v2/home/money")
-        .setQueryParameters(condition.toQueryParameters)
-        .addQueryParameter("mapping", "1")
-        .GET
+      (baseUrl / "/v2/home/money").GET <<? Map(
+        "mapping" -> Some("1"),
+        "group_by" -> Some("receipt_id"),
+        "category_id" -> categoryId.map(_.toString),
+        "genre_id" -> genreId.map(_.toString),
+        "mode" -> mode.map(_.raw),
+        "order" -> order,
+        "start_date" -> startDate.map(_.toString),
+        "end_date" -> endDate.map(_.toString),
+        "page" -> Some(page.toString),
+        "limit" -> Some(limit.toString)
+      ).clean
     )
 
-  def getMoneysGroupByReceiptId(condition: GetMoneysRequestCondition)(implicit ec: ExecutionContext): Future[GetMoneysGroupByReceiptIdResponse] =
+  def getMoneysGroupByReceiptId(
+      categoryId: Option[Int] = None,
+      genreId: Option[Int] = None,
+      mode: Option[Mode] = None,
+      order: Option[String] = None,
+      startDate: Option[LocalDate] = None,
+      endDate: Option[LocalDate] = None,
+      page: Int = 1,
+      limit: Int = 20
+  )(implicit ec: ExecutionContext): Future[GetMoneysGroupByReceiptIdResponse] =
     request[GetMoneysGroupByReceiptIdResponse](
-      url(s"$baseUrl/v2/home/money")
-        .setQueryParameters(condition.toQueryParameters)
-        .addQueryParameter("mapping", "1")
-        .addQueryParameter("group_by", "receipt_id")
-        .GET
+      (baseUrl / "v2/home/money").GET <<? Map(
+        "mapping" -> Some("1"),
+        "group_by" -> Some("receipt_id"),
+        "category_id" -> categoryId.map(_.toString),
+        "genre_id" -> genreId.map(_.toString),
+        "mode" -> mode.map(_.raw),
+        "order" -> order,
+        "start_date" -> startDate.map(_.toString),
+        "end_date" -> endDate.map(_.toString),
+        "page" -> Some(page.toString),
+        "limit" -> Some(limit.toString)
+      ).clean
     )
 
-  // 
-  def createPayment()(implicit ec: ExecutionContext): Future[Any] = ???
+  def createPayment(
+      categoryId: Int,
+      genreId: Int,
+      amount: Long,
+      date: LocalDate,
+      toAccountId: Option[Int] = None,
+      memo: Option[String] = None
+  )(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/money").POST <<? Map(
+        "mapping" -> Some("1"),
+        "category_id" -> Some(categoryId.toString),
+        "genre_id" -> Some(genreId.toString),
+        "amount" -> Some(amount.toString),
+        "date" -> Some(date.toString),
+        "to_account_id" -> toAccountId.map(_.toString)
+      ).clean
+    )
+
+
 
   def createIncome()(implicit ec: ExecutionContext): Future[Any] = ???
 
@@ -64,17 +118,17 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
 
   def getAccounts(implicit ec: ExecutionContext): Future[GetAccountsResponse] =
     request[GetAccountsResponse](
-      url(s"$baseUrl/v2/home/account").GET
+      (baseUrl / "v2/home/account").GET
     )
 
   def getCategories(implicit ec: ExecutionContext): Future[GetCategoriesResponse] =
     request[GetCategoriesResponse](
-      url(s"$baseUrl/v2/home/category").GET
+      (baseUrl / "v2/home/category").GET
     )
 
   def getGenres(implicit ec: ExecutionContext): Future[GetGenresResponse] =
     request[GetGenresResponse](
-      url(s"$baseUrl/v2/home/genre").GET
+      (baseUrl / "v2/home/genre").GET
     )
 
   def getCurrency: Future[Any] = ???
@@ -83,5 +137,9 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
     Http.default(req <@ (consumerKey, accessToken) OK as.Bytes).map(Json.parse(_).as[T])
 }
 
+object Zaim {
+  implicit class OptionValueMapOps[K, V](val map: Map[K, Option[V]]) extends AnyVal {
+    def clean: Map[K, V] = map.collect { case (key, Some(value)) => (key, value) }
+  }
 
-
+}

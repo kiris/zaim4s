@@ -39,7 +39,7 @@ case class GetMoneysGroupByReceiptIdResponse(
 sealed trait MoneyOrReceipt
 final case class Money(
   id: Long,
-  amount: Int,
+  amount: Long,
   name: String,
   userId: Int,
   date: LocalDate,
@@ -58,7 +58,7 @@ final case class Money(
 ) extends MoneyOrReceipt
 
 final case class Receipt(
-  amount: Int,
+  amount: Long,
   toAccountId: Int,
   fromAccountId: Int,
   date: LocalDate,
@@ -75,7 +75,7 @@ final case class Receipt(
 final case class Data(
   id: Long,
   receiptId: Int,
-  amount: Int,
+  amount: Long,
   name: String,
   categoryId: Int,
   genreId: Int,
