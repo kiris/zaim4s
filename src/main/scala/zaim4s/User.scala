@@ -2,7 +2,7 @@ package zaim4s
 
 import java.time.LocalDateTime
 
-final case class UserVerifyResponse(
+final case class VerifyUserResponse(
   me: User
 )
 

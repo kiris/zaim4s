@@ -2,7 +2,7 @@ package zaim4s
 
 import java.time.{LocalDate, LocalDateTime}
 
-case class MoneyRequestCondition(
+case class GetMoneysRequestCondition(
   categoryId: Option[Int] = None,
   genreId: Option[Int] = None,
   mode: Option[Mode] = None,
@@ -28,11 +28,11 @@ case class MoneyRequestCondition(
     )
 }
 
-case class MoneyResponse(
+case class GetMoneysResponse(
   money: List[Money]
 )
 
-case class MoneyGroupByReceiptResponse(
+case class GetMoneysGroupByReceiptIdResponse(
   money: List[MoneyOrReceipt]
 )
 

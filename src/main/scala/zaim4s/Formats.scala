@@ -28,7 +28,7 @@ object Formats {
 
   implicit val userFormat: Format[User] = JsonNaming.snakecase(Json.format[User])
 
-  implicit val userVerifyResponseFormat: Format[UserVerifyResponse] = JsonNaming.snakecase(Json.format[UserVerifyResponse])
+  implicit val userVerifyResponseFormat: Format[VerifyUserResponse] = JsonNaming.snakecase(Json.format[VerifyUserResponse])
 
 
   implicit val moneyFormat: Format[Money] = JsonNaming.snakecase(Json.format[Money])
@@ -50,27 +50,27 @@ object Formats {
       }
   }
 
-  implicit val moneyResponseReads: Reads[MoneyResponse] = JsonNaming.snakecase(Json.reads[MoneyResponse])
+  implicit val moneyResponseReads: Reads[GetMoneysResponse] = JsonNaming.snakecase(Json.reads[GetMoneysResponse])
 
   // FIXME: why compile failed.
   // implicit val moneyResponseWrites: Writes[MoneyResponse] = Json.writes[MoneyResponse]
 
-  implicit val moneyGroupByReceiptResponseFormat: Format[MoneyGroupByReceiptResponse] = JsonNaming.snakecase(Json.format[MoneyGroupByReceiptResponse])
+  implicit val moneyGroupByReceiptResponseFormat: Format[GetMoneysGroupByReceiptIdResponse] = JsonNaming.snakecase(Json.format[GetMoneysGroupByReceiptIdResponse])
 
 
   implicit val accountFormat: Format[Account] = JsonNaming.snakecase(Json.format[Account])
 
-  implicit val accountResponseFormat: Format[AccountResponse] = JsonNaming.snakecase(Json.format[AccountResponse])
+  implicit val accountResponseFormat: Format[GetAccountsResponse] = JsonNaming.snakecase(Json.format[GetAccountsResponse])
 
 
   implicit val categoryFormat: Format[Category] = JsonNaming.snakecase(Json.format[Category])
 
-  implicit val categoryResponseFormat: Format[CategoryResponse] = JsonNaming.snakecase(Json.format[CategoryResponse])
+  implicit val categoryResponseFormat: Format[GetCategoriesResponse] = JsonNaming.snakecase(Json.format[GetCategoriesResponse])
 
 
   implicit val genreFormat: Format[Genre] = JsonNaming.snakecase(Json.format[Genre])
 
-  implicit val genreResponseFormat: Format[GenreResponse] = JsonNaming.snakecase(Json.format[GenreResponse])
+  implicit val genreResponseFormat: Format[GetGenresResponse] = JsonNaming.snakecase(Json.format[GetGenresResponse])
 
 
 }

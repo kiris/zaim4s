@@ -1,6 +1,6 @@
 package zaim4s
 
-final case class CategoryResponse(
+final case class GetCategoriesResponse(
   categories: List[Category]
 ) {
   def toMap: Map[Int, Category] = categories.map { category: Category => category.id -> category }.toMap
