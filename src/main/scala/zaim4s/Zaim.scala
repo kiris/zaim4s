@@ -36,15 +36,15 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       (baseUrl / "/v2/home/money").GET <<? Map(
         "mapping" -> Some("1"),
         "group_by" -> Some("receipt_id"),
-        "category_id" -> categoryId.map(_.toString),
-        "genre_id" -> genreId.map(_.toString),
+        "category_id" -> categoryId,
+        "genre_id" -> genreId,
         "mode" -> mode.map(_.raw),
         "order" -> order,
-        "start_date" -> startDate.map(_.toString),
-        "end_date" -> endDate.map(_.toString),
-        "page" -> Some(page.toString),
-        "limit" -> Some(limit.toString)
-      ).clean
+        "start_date" -> startDate,
+        "end_date" -> endDate,
+        "page" -> Some(page),
+        "limit" -> Some(limit)
+      ).clean.mapValues(_.toString)
     )
 
   def getMoneysGroupByReceiptId(
@@ -61,78 +61,181 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       (baseUrl / "v2/home/money").GET <<? Map(
         "mapping" -> Some("1"),
         "group_by" -> Some("receipt_id"),
-        "category_id" -> categoryId.map(_.toString),
-        "genre_id" -> genreId.map(_.toString),
+        "category_id" -> categoryId,
+        "genre_id" -> genreId,
         "mode" -> mode.map(_.raw),
         "order" -> order,
-        "start_date" -> startDate.map(_.toString),
-        "end_date" -> endDate.map(_.toString),
-        "page" -> Some(page.toString),
-        "limit" -> Some(limit.toString)
-      ).clean
+        "start_date" -> startDate,
+        "end_date" -> endDate,
+        "page" -> Some(page),
+        "limit" -> Some(limit)
+      ).clean.mapValues(_.toString)
     )
 
   def createPayment(
-      categoryId: Int,
-      genreId: Int,
       amount: Long,
       date: LocalDate,
-      toAccountId: Option[Int] = None,
-      memo: Option[String] = None
+      categoryId: Int,
+      genreId: Int,
+      fromAccountId: Option[Int] = None,
+      comment: Option[String] = None,
+      name: Option[String] = None,
+      place: Option[String] = None
   )(implicit ec: ExecutionContext): Future[JsValue] =
     request[JsValue](
-      (baseUrl / "v2/home/money").POST <<? Map(
+      (baseUrl / "v2/home/money/payout").POST <<? Map(
         "mapping" -> Some("1"),
-        "category_id" -> Some(categoryId.toString),
-        "genre_id" -> Some(genreId.toString),
-        "amount" -> Some(amount.toString),
-        "date" -> Some(date.toString),
-        "to_account_id" -> toAccountId.map(_.toString)
+        "amount" -> Some(amount),
+        "date" -> Some(date),
+        "category_id" -> Some(categoryId),
+        "genre_id" -> Some(genreId),
+        "from_account_id" -> fromAccountId,
+        "comment" -> comment,
+        "name" -> name,
+        "place" -> place
+      ).clean.mapValues(_.toString)
+    )
+
+  def createIncome(
+      amount: Long,
+      date: LocalDate,
+      categoryId: Int,
+      toAccountId: Option[Int] = None,
+      comment: Option[String] = None
+  )(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/money/income").POST <<? Map(
+        "mapping" -> Some("1"),
+        "amount" -> Some(amount),
+        "date" -> Some(date),
+        "category_id" -> Some(categoryId),
+        "to_account_id" -> toAccountId,
+        "comment" -> comment
+      ).clean.mapValues(_.toString)
+    )
+
+
+  def createTransfer(
+      amount: Long,
+      date: LocalDate,
+      fromAccountId: Int,
+      toAccountId: Int,
+      comment: Option[String] = None
+  )(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/money/transfer").POST <<? Map(
+        "mapping" -> Some("1"),
+        "amount" -> Some(amount),
+        "date" -> Some(date),
+        "from_account_id" -> Some(fromAccountId),
+        "to_account_id" -> Some(toAccountId),
+        "comment" -> comment
+      ).clean.mapValues(_.toString)
+    )
+
+  def updatePayment(
+      id: Int,
+      amount: Long,
+      date: LocalDate,
+      categoryId: Option[Int]= None,
+      genreId: Option[Int] = None,
+      fromAccountId: Option[Int] = None,
+      comment: Option[String] = None,
+      name: Option[String] = None,
+      place: Option[String] = None
+  )(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/money/payout" / id).PUT <<? Map(
+        "mapping" -> Some("1"),
+        "amount" -> Some(amount),
+        "date" -> Some(date),
+        "category_id" -> categoryId,
+        "genre_id" -> genreId,
+        "from_account_id" -> fromAccountId,
+        "comment" -> comment,
+        "name" -> name,
+        "place" -> place
+      ).clean.mapValues(_.toString)
+    )
+
+  def updateIncome(
+      id: Int,
+      amount: Long,
+      date: LocalDate,
+      categoryId: Option[Int] = None,
+      toAccountId: Option[Int] = None,
+      comment: Option[String] = None
+  )(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/money/income" / id).PUT <<? Map(
+        "mapping" -> Some("1"),
+        "amount" -> Some(amount),
+        "date" -> Some(date),
+        "category_id" -> categoryId,
+        "to_account_id" -> toAccountId,
+        "comment" -> comment
+      ).clean.mapValues(_.toString)
+    )
+
+  def updateTransfer(
+      id: Int,
+      amount: Long,
+      date: LocalDate,
+      fromAccountId: Option[Int] = None, // check
+      toAccountId: Option[Int] = None, // check
+      comment: Option[String] = None
+  )(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/money/transfer" / id).PUT <<? Map(
+        "mapping" -> Some("1"),
+        "amount" -> Some(amount),
+        "date" -> Some(date),
+        "from_account_id" -> fromAccountId,
+        "to_account_id" -> toAccountId,
+        "comment" -> comment
+      ).clean.mapValues(_.toString)
+    )
+
+
+  def deletePayment(id: Int)(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/money/payment" / id).DELETE
+    )
+
+  def deleteIncome(id: Int)(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/money/income" / id).DELETE
+    )
+
+  def deleteTransfer(id: Int)(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/money/transfer" / id).DELETE
+    )
+
+
+  def getAccounts(mode: Option[Mode] = None)(implicit ec: ExecutionContext): Future[JsValue] =
+  request[JsValue](
+    (baseUrl / "v2/home/account").GET <<? Map(
+      "mapping" -> Some("1"),
+      "mode" -> mode.map(_.raw)
+    ).clean
+  )
+
+    def getCategories(mode: Option[Mode] = None)(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/account").GET <<? Map(
+        "mapping" -> Some("1"),
+        "mode" -> mode.map(_.raw)
       ).clean
     )
 
-
-
-  def createIncome()(implicit ec: ExecutionContext): Future[Any] = ???
-
-  def createTransfer()(implicit ec: ExecutionContext): Future[Any] = ???
-
-  def updatePayment()(implicit ec: ExecutionContext): Future[Any] = ???
-
-  def updateIncome()(implicit ec: ExecutionContext): Future[Any] = ???
-
-  def updateTransfer()(implicit ec: ExecutionContext): Future[Any] = ???
-
-  def deletePayment()(implicit ec: ExecutionContext): Future[Any] = ???
-
-  def deleteIncome()(implicit ec: ExecutionContext): Future[Any] = ???
-
-  def deleteTransfer()(implicit ec: ExecutionContext): Future[Any] = ???
-
-  def getCategory()(implicit ec: ExecutionContext): Future[Any] = ???
-
-  def getGenre()(implicit ec: ExecutionContext): Future[Any] = ???
-
-  def getAccount()(implicit ec: ExecutionContext): Future[Any] = ???
-
-
-  def getAccounts(implicit ec: ExecutionContext): Future[GetAccountsResponse] =
-    request[GetAccountsResponse](
-      (baseUrl / "v2/home/account").GET
+  def getGenres()(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      (baseUrl / "v2/home/genre").GET <<? Map(
+        "mapping" -> Some("1")
+      ).clean
     )
 
-  def getCategories(implicit ec: ExecutionContext): Future[GetCategoriesResponse] =
-    request[GetCategoriesResponse](
-      (baseUrl / "v2/home/category").GET
-    )
-
-  def getGenres(implicit ec: ExecutionContext): Future[GetGenresResponse] =
-    request[GetGenresResponse](
-      (baseUrl / "v2/home/genre").GET
-    )
-
-  def getCurrency: Future[Any] = ???
-  
   private[this] def request[T](req: Req)(implicit ec: ExecutionContext, fjs: Reads[T]): Future[T] =
     Http.default(req <@ (consumerKey, accessToken) OK as.Bytes).map(Json.parse(_).as[T])
 }
