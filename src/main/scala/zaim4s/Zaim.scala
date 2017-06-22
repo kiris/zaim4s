@@ -11,14 +11,13 @@ import zaim4s.Formats._
 
 import scala.concurrent.ExecutionContext
 
-
 case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
   import Zaim.OptionValueMapOps
 
   private[this] def baseUrl = url("https://api.zaim.net")
 
-  def verifyUser(implicit ec: ExecutionContext): Future[VerifyUserResponse] =
-    request[VerifyUserResponse](
+  def verifyUser(implicit ec: ExecutionContext): Future[VerifyUser.Response] =
+    request[VerifyUser.Response](
       (baseUrl / "v2/home/user/verify").GET
     )
 
@@ -31,8 +30,8 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       endDate: Option[LocalDate] = None,
       page: Int = 1,
       limit: Int = 20
-  )(implicit ec: ExecutionContext): Future[GetMoneysResponse] =
-    request[GetMoneysResponse](
+  )(implicit ec: ExecutionContext): Future[GetMoneys.Response] =
+    request[GetMoneys.Response](
       (baseUrl / "/v2/home/money").GET <<? Map(
         "mapping" -> Some("1"),
         "group_by" -> Some("receipt_id"),
@@ -56,8 +55,8 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       endDate: Option[LocalDate] = None,
       page: Int = 1,
       limit: Int = 20
-  )(implicit ec: ExecutionContext): Future[GetMoneysGroupByReceiptIdResponse] =
-    request[GetMoneysGroupByReceiptIdResponse](
+  )(implicit ec: ExecutionContext): Future[GetMoneys.GroupByReceiptIdResponse] =
+    request[GetMoneys.GroupByReceiptIdResponse](
       (baseUrl / "v2/home/money").GET <<? Map(
         "mapping" -> Some("1"),
         "group_by" -> Some("receipt_id"),
@@ -81,8 +80,8 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       comment: Option[String] = None,
       name: Option[String] = None,
       place: Option[String] = None
-  )(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
+  )(implicit ec: ExecutionContext): Future[CreateMoney.Response] =
+    request[CreateMoney.Response](
       (baseUrl / "v2/home/money/payout").POST <<? Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
@@ -102,8 +101,8 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       categoryId: Int,
       toAccountId: Option[Int] = None,
       comment: Option[String] = None
-  )(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
+  )(implicit ec: ExecutionContext): Future[CreateMoney.Response] =
+    request[CreateMoney.Response](
       (baseUrl / "v2/home/money/income").POST <<? Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
@@ -121,8 +120,8 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       fromAccountId: Int,
       toAccountId: Int,
       comment: Option[String] = None
-  )(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
+  )(implicit ec: ExecutionContext): Future[CreateMoney.Response] =
+    request[CreateMoney.Response ](
       (baseUrl / "v2/home/money/transfer").POST <<? Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
@@ -244,5 +243,4 @@ object Zaim {
   implicit class OptionValueMapOps[K, V](val map: Map[K, Option[V]]) extends AnyVal {
     def clean: Map[K, V] = map.collect { case (key, Some(value)) => (key, value) }
   }
-
 }

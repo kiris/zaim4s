@@ -1,12 +1,22 @@
 package zaim4s
 
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalDateTime}
 
 import com.github.tototoshi.play.json.JsonNaming
-import play.api.libs.json._
+import play.api.libs.json.{JsError, JsString, JsSuccess, _}
 
-object Formats {
+object Formats extends
+    VerifyUserFormats with
+    GetMoneysFormats with
+    CreateMoneyFormats with
+    GetAccountsFormats with
+    GetCategoriesFormats with
+    GetGenresFormats
+
+
+trait DateTimeFormats {
+  import java.time.format.DateTimeFormatter
+  import java.time.{LocalDate, LocalDateTime}
+
   implicit val dateReads: Reads[LocalDate] = Reads.localDateReads("yyyy-MM-dd")
 
   implicit val dateWrites: Writes[LocalDate] = Writes.DefaultLocalDateWrites
@@ -15,7 +25,9 @@ object Formats {
 
   implicit val localDateTimeWrites: Writes[LocalDateTime] =
     Writes.temporalWrites[LocalDateTime, DateTimeFormatter](DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+}
 
+trait ModeFormats {
   implicit val modeFormat: Format[Mode] = Format[Mode](
     {
       case JsString(str) if str == Payment.raw => JsSuccess(Payment)
@@ -25,53 +37,87 @@ object Formats {
       mode => JsString(mode.raw)
     })
 
+}
 
-  implicit val userFormat: Format[User] = JsonNaming.snakecase(Json.format[User])
+trait VerifyUserFormats {
+  import VerifyUser._
+  import com.github.tototoshi.play.json.JsonNaming
+  import play.api.libs.json._
 
-  implicit val userVerifyResponseFormat: Format[VerifyUserResponse] = JsonNaming.snakecase(Json.format[VerifyUserResponse])
+  implicit val verifyUserUserFormat: Format[User] = JsonNaming.snakecase(Json.format[User])
 
+  implicit val verifyUserResponseFormat: Format[Response] = JsonNaming.snakecase(Json.format[Response])
+}
 
-  implicit val moneyFormat: Format[Money] = JsonNaming.snakecase(Json.format[Money])
+trait GetMoneysFormats extends DateTimeFormats with ModeFormats {
+  import GetMoneys._
 
-  implicit val dataFormat: Format[Data] = JsonNaming.snakecase(Json.format[Data])
+  implicit val getMoneysDataFormat: Format[Data] = JsonNaming.snakecase(Json.format[Data])
 
-  implicit val receiptFormat: Format[Receipt] = JsonNaming.snakecase(Json.format[Receipt])
+  implicit val getMoneysMoneyFormat: Format[Money] = JsonNaming.snakecase(Json.format[Money])
 
-  implicit val moneyOrReceiptFormat: Format[MoneyOrReceipt] = new Format[MoneyOrReceipt] {
+  implicit val getMoneysReceiptFormat: Format[Receipt] = JsonNaming.snakecase(Json.format[Receipt])
+
+  implicit val getMoneysMoneyOrReceiptFormat: Format[MoneyOrReceipt] = new Format[MoneyOrReceipt] {
     override def writes(o: MoneyOrReceipt): JsValue = o match {
-      case m: Money => moneyFormat.writes(m)
-      case r: Receipt => receiptFormat.writes(r)
+      case m: Money => getMoneysMoneyFormat.writes(m)
+      case r: Receipt => getMoneysReceiptFormat.writes(r)
     }
 
     override def reads(json: JsValue): JsResult[MoneyOrReceipt] =
       (json \ "receipt_id").validate[Int].flatMap {
-        case 0 => moneyFormat.reads(json)
-        case _ => receiptFormat.reads(json)
+        case 0 => getMoneysMoneyFormat.reads(json)
+        case _ => getMoneysReceiptFormat.reads(json)
       }
   }
 
-  implicit val moneyResponseReads: Reads[GetMoneysResponse] = JsonNaming.snakecase(Json.reads[GetMoneysResponse])
+  implicit val getMoneysResponseReads: Reads[Response] = JsonNaming.snakecase(Json.reads[Response])
 
   // FIXME: why compile failed.
-  // implicit val moneyResponseWrites: Writes[MoneyResponse] = Json.writes[MoneyResponse]
+  // implicit val getMoneysResponseWrites: Writes[Response] = Json.writes[Response]
 
-  implicit val moneyGroupByReceiptResponseFormat: Format[GetMoneysGroupByReceiptIdResponse] = JsonNaming.snakecase(Json.format[GetMoneysGroupByReceiptIdResponse])
-
-
-  implicit val accountFormat: Format[Account] = JsonNaming.snakecase(Json.format[Account])
-
-  implicit val accountResponseFormat: Format[GetAccountsResponse] = JsonNaming.snakecase(Json.format[GetAccountsResponse])
-
-
-  implicit val categoryFormat: Format[Category] = JsonNaming.snakecase(Json.format[Category])
-
-  implicit val categoryResponseFormat: Format[GetCategoriesResponse] = JsonNaming.snakecase(Json.format[GetCategoriesResponse])
-
-
-  implicit val genreFormat: Format[Genre] = JsonNaming.snakecase(Json.format[Genre])
-
-  implicit val genreResponseFormat: Format[GetGenresResponse] = JsonNaming.snakecase(Json.format[GetGenresResponse])
-
+  implicit val getMoneysGroupByReceiptResponseFormat: Format[GroupByReceiptIdResponse] = JsonNaming.snakecase(Json.format[GroupByReceiptIdResponse])
 
 }
 
+
+trait CreateMoneyFormats extends DateTimeFormats {
+  import CreateMoney._
+
+  implicit val createMoneyMoneyFormat: Format[Money] = JsonNaming.snakecase(Json.format[Money])
+
+  implicit val createMoneyUserFormat: Format[User] = JsonNaming.snakecase(Json.format[User])
+
+  implicit val createMoneyStampFormat: Format[Stamp] = JsonNaming.snakecase(Json.format[Stamp])
+
+  implicit val createMoneyStampsFormat: Format[Stamps] = JsonNaming.snakecase(Json.format[Stamps])
+
+  implicit val createMoneyResponseFormat: Format[Response] = JsonNaming.snakecase(Json.format[Response])
+
+}
+
+trait GetAccountsFormats extends ModeFormats {
+  import GetAccounts._
+
+  implicit val getAccountsAccountFormat: Format[Account] = JsonNaming.snakecase(Json.format[Account])
+
+  implicit val getAccountsAccountResponseFormat: Format[Response] = JsonNaming.snakecase(Json.format[Response])
+}
+
+trait GetCategoriesFormats extends ModeFormats {
+  import GetCategories._
+
+  implicit val getCategoriesCategoryFormat: Format[Category] = JsonNaming.snakecase(Json.format[Category])
+
+  implicit val getCategoriesCategoryResponseFormat: Format[Response] = JsonNaming.snakecase(Json.format[Response])
+
+}
+
+trait GetGenresFormats {
+  import GetGenres._
+
+  implicit val genreFormat: Format[Genre] = JsonNaming.snakecase(Json.format[Genre])
+
+  implicit val genreResponseFormat: Format[Response] = JsonNaming.snakecase(Json.format[Response])
+
+}
