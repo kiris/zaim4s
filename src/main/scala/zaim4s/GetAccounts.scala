@@ -1,5 +1,7 @@
 package zaim4s
 
+import java.time.LocalDateTime
+
 object GetAccounts {
 
   final case class Response(
@@ -10,6 +12,10 @@ object GetAccounts {
 
   final case class Account(
       id: Int,
-      name: String
+      name: String,
+      sort: Int,
+      parentAccountId: Int,
+      active: Int,
+      modified: LocalDateTime
   )
 }

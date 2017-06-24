@@ -2,7 +2,7 @@ package zaim4s
 
 
 import com.github.tototoshi.play.json.JsonNaming
-import play.api.libs.json.{JsError, JsString, JsSuccess, _}
+import play.api.libs.json._
 
 object Formats extends
     VerifyUserFormats with
@@ -32,6 +32,7 @@ trait ModeFormats {
     {
       case JsString(str) if str == Payment.raw => JsSuccess(Payment)
       case JsString(str) if str == Income.raw => JsSuccess(Income)
+      case JsString(str) if str == Transfer.raw => JsSuccess(Transfer)
       case str => JsError(s"'${str}' mode is unknown.")
     }, {
       mode => JsString(mode.raw)
@@ -39,7 +40,7 @@ trait ModeFormats {
 
 }
 
-trait VerifyUserFormats {
+trait VerifyUserFormats extends DateTimeFormats {
   import VerifyUser._
   import com.github.tototoshi.play.json.JsonNaming
   import play.api.libs.json._
@@ -96,7 +97,7 @@ trait CreateMoneyFormats extends DateTimeFormats {
 
 }
 
-trait GetAccountsFormats extends ModeFormats {
+trait GetAccountsFormats extends ModeFormats with DateTimeFormats {
   import GetAccounts._
 
   implicit val getAccountsAccountFormat: Format[Account] = JsonNaming.snakecase(Json.format[Account])

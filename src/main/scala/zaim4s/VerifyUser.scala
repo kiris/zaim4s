@@ -22,7 +22,7 @@ object VerifyUser {
       currencyCode: String,
       profileModified: LocalDateTime,
       profileImageUrl: String,
-      coverImageUrl: String,
-      dataModified: Option[LocalDateTime]
+      coverImageUrl: String
+      // dataModified: Option[LocalDateTime]
   )
 }

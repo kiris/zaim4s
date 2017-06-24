@@ -8,6 +8,11 @@ sealed trait Mode {
 case object Payment extends Mode {
   override def raw: String = "payment"
 }
+
 case object Income extends Mode {
   override def raw: String = "income"
+}
+
+case object Transfer extends Mode {
+  override def raw: String = "transfer"
 }

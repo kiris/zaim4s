@@ -57,7 +57,7 @@ object GetMoneys {
       active: Int,
       created: LocalDateTime,
       currencyCode: String,
-      receiptId: Int,
+      receiptId: Long,
       place: String,
       placeUid: Option[String]
   ) extends MoneyOrReceipt
@@ -79,7 +79,7 @@ object GetMoneys {
 
   final case class Data(
       id: Long,
-      receiptId: Int,
+      receiptId: Long,
       amount: Long,
       name: String,
       categoryId: Int,

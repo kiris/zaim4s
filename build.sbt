@@ -2,7 +2,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "zaim4s",
     organization := "com.github.kiris",
-    version := "0.1",
+    version := "0.1-SNAPSHOT",
     scalaVersion := "2.12.2",
     crossScalaVersions := Seq("2.11.8", "2.12.2")
 
@@ -17,5 +17,42 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.6.0-M2",
   "net.databinder.dispatch" %% "dispatch-core" % "0.13.0",
-  "com.github.tototoshi" %% "play-json-naming" % "1.2.0-SNAPSHOT"
+  "com.github.tototoshi" %% "play-json-naming" % "1.2.0-SNAPSHOT",
+
+  "org.slf4j" % "slf4j-api" % "1.7.25" % "compile",
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+  "ch.qos.logback" % "logback-classic" % "1.2.3" % "test"
 )
+
+
+publishArtifact in Test := false
+
+publishTo := Some(
+  if (isSnapshot.value)
+    Opts.resolver.sonatypeSnapshots
+  else
+    Opts.resolver.sonatypeStaging
+)
+
+publishMavenStyle := true
+
+sonatypeProfileName := "com.github.kiris"
+licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+homepage := Some(url("http://github.com/kiris/zaim4s"))
+
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/kiris/zaim4s"),
+    "scm:git:git@github.com:kiris/zaim4s.git"
+  )
+)
+
+developers := List(
+  Developer(
+    id = "kiris",
+    name = "Yoshiaki Iwanaga",
+    email = "kiris60@gmail.com",
+    url = url("http://kiris.github.com")
+  )
+)
+

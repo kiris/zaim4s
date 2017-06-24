@@ -6,6 +6,7 @@ import java.time.LocalDate
 import dispatch._
 import dispatch.oauth._
 import org.asynchttpclient.oauth.{ConsumerKey, RequestToken}
+import org.slf4j.LoggerFactory
 import play.api.libs.json._
 import zaim4s.Formats._
 
@@ -14,11 +15,14 @@ import scala.concurrent.ExecutionContext
 case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
   import Zaim.OptionValueMapOps
 
-  private[this] def baseUrl = url("https://api.zaim.net")
+  private[this] def baseUrl = "https://api.zaim.net"
 
-  def verifyUser(implicit ec: ExecutionContext): Future[VerifyUser.Response] =
-    request[VerifyUser.Response](
-      (baseUrl / "v2/home/user/verify").GET
+  private[this] val logger = LoggerFactory.getLogger(getClass)
+
+  // XXX: data_modifiedが無かった
+  def verifyUser()(implicit ec: ExecutionContext): Future[JsValue] =
+    request[JsValue](
+      url(s"$baseUrl/v2/home/user/verify").GET
     )
 
   def getMoneys(
@@ -32,9 +36,8 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       limit: Int = 20
   )(implicit ec: ExecutionContext): Future[GetMoneys.Response] =
     request[GetMoneys.Response](
-      (baseUrl / "/v2/home/money").GET <<? Map(
+      url(s"$baseUrl/v2/home/money").GET <<? Map(
         "mapping" -> Some("1"),
-        "group_by" -> Some("receipt_id"),
         "category_id" -> categoryId,
         "genre_id" -> genreId,
         "mode" -> mode.map(_.raw),
@@ -57,7 +60,7 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       limit: Int = 20
   )(implicit ec: ExecutionContext): Future[GetMoneys.GroupByReceiptIdResponse] =
     request[GetMoneys.GroupByReceiptIdResponse](
-      (baseUrl / "v2/home/money").GET <<? Map(
+      url(s"$baseUrl/v2/home/money").GET <<? Map(
         "mapping" -> Some("1"),
         "group_by" -> Some("receipt_id"),
         "category_id" -> categoryId,
@@ -77,21 +80,21 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       categoryId: Int,
       genreId: Int,
       fromAccountId: Option[Int] = None,
-      comment: Option[String] = None,
       name: Option[String] = None,
-      place: Option[String] = None
+      place: Option[String] = None,
+      comment: Option[String] = None
   )(implicit ec: ExecutionContext): Future[CreateMoney.Response] =
     request[CreateMoney.Response](
-      (baseUrl / "v2/home/money/payout").POST <<? Map(
+      url(s"$baseUrl/v2/home/money/payment").POST << Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
         "date" -> Some(date),
         "category_id" -> Some(categoryId),
         "genre_id" -> Some(genreId),
         "from_account_id" -> fromAccountId,
-        "comment" -> comment,
         "name" -> name,
-        "place" -> place
+        "place" -> place,
+        "comment" -> comment
       ).clean.mapValues(_.toString)
     )
 
@@ -100,15 +103,17 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       date: LocalDate,
       categoryId: Int,
       toAccountId: Option[Int] = None,
+      place: Option[String] = None,
       comment: Option[String] = None
   )(implicit ec: ExecutionContext): Future[CreateMoney.Response] =
     request[CreateMoney.Response](
-      (baseUrl / "v2/home/money/income").POST <<? Map(
+      url(s"$baseUrl/v2/home/money/income").POST << Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
         "date" -> Some(date),
         "category_id" -> Some(categoryId),
         "to_account_id" -> toAccountId,
+        "place" -> place,
         "comment" -> comment
       ).clean.mapValues(_.toString)
     )
@@ -122,7 +127,7 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       comment: Option[String] = None
   )(implicit ec: ExecutionContext): Future[CreateMoney.Response] =
     request[CreateMoney.Response ](
-      (baseUrl / "v2/home/money/transfer").POST <<? Map(
+      url(s"$baseUrl/v2/home/money/transfer").POST << Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
         "date" -> Some(date),
@@ -133,51 +138,53 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
     )
 
   def updatePayment(
-      id: Int,
+      id: Long,
       amount: Long,
       date: LocalDate,
       categoryId: Option[Int]= None,
       genreId: Option[Int] = None,
       fromAccountId: Option[Int] = None,
-      comment: Option[String] = None,
       name: Option[String] = None,
-      place: Option[String] = None
+      place: Option[String] = None,
+      comment: Option[String] = None
   )(implicit ec: ExecutionContext): Future[JsValue] =
     request[JsValue](
-      (baseUrl / "v2/home/money/payout" / id).PUT <<? Map(
+      url(s"$baseUrl/v2/home/money/payment/$id").PUT << Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
         "date" -> Some(date),
         "category_id" -> categoryId,
         "genre_id" -> genreId,
         "from_account_id" -> fromAccountId,
-        "comment" -> comment,
         "name" -> name,
-        "place" -> place
+        "place" -> place,
+        "comment" -> comment
       ).clean.mapValues(_.toString)
     )
 
   def updateIncome(
-      id: Int,
+      id: Long,
       amount: Long,
       date: LocalDate,
       categoryId: Option[Int] = None,
       toAccountId: Option[Int] = None,
+      place: Option[String] = None,
       comment: Option[String] = None
   )(implicit ec: ExecutionContext): Future[JsValue] =
     request[JsValue](
-      (baseUrl / "v2/home/money/income" / id).PUT <<? Map(
+      url(s"$baseUrl/v2/home/money/income/$id").PUT << Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
         "date" -> Some(date),
         "category_id" -> categoryId,
         "to_account_id" -> toAccountId,
+        "place" -> place,
         "comment" -> comment
       ).clean.mapValues(_.toString)
     )
 
   def updateTransfer(
-      id: Int,
+      id: Long,
       amount: Long,
       date: LocalDate,
       fromAccountId: Option[Int] = None, // check
@@ -185,7 +192,7 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       comment: Option[String] = None
   )(implicit ec: ExecutionContext): Future[JsValue] =
     request[JsValue](
-      (baseUrl / "v2/home/money/transfer" / id).PUT <<? Map(
+      url(s"$baseUrl/v2/home/money/transfer/$id").PUT << Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
         "date" -> Some(date),
@@ -196,47 +203,56 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
     )
 
 
-  def deletePayment(id: Int)(implicit ec: ExecutionContext): Future[JsValue] =
+  def deletePayment(id: Long)(implicit ec: ExecutionContext): Future[JsValue] =
     request[JsValue](
-      (baseUrl / "v2/home/money/payment" / id).DELETE
+      url(s"$baseUrl/v2/home/money/payment/$id").DELETE
     )
 
-  def deleteIncome(id: Int)(implicit ec: ExecutionContext): Future[JsValue] =
+  def deleteIncome(id: Long)(implicit ec: ExecutionContext): Future[JsValue] =
     request[JsValue](
-      (baseUrl / "v2/home/money/income" / id).DELETE
+      url(s"$baseUrl/v2/home/money/income/$id").DELETE
     )
 
-  def deleteTransfer(id: Int)(implicit ec: ExecutionContext): Future[JsValue] =
+  def deleteTransfer(id: Long)(implicit ec: ExecutionContext): Future[JsValue] =
     request[JsValue](
-      (baseUrl / "v2/home/money/transfer" / id).DELETE
+      url(s"$baseUrl/v2/home/money/transfer/$id").DELETE
     )
 
 
-  def getAccounts(mode: Option[Mode] = None)(implicit ec: ExecutionContext): Future[JsValue] =
-  request[JsValue](
-    (baseUrl / "v2/home/account").GET <<? Map(
+  // modeは不要では
+  def getAccounts(mode: Option[Mode] = None)(implicit ec: ExecutionContext): Future[GetAccounts.Response] =
+  request[GetAccounts.Response](
+    url(s"$baseUrl/v2/home/account").GET <<? Map(
       "mapping" -> Some("1"),
       "mode" -> mode.map(_.raw)
     ).clean
   )
 
-    def getCategories(mode: Option[Mode] = None)(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
-      (baseUrl / "v2/home/account").GET <<? Map(
+  // modeが有効じゃない
+  def getCategories(mode: Option[Mode] = None)(implicit ec: ExecutionContext): Future[GetCategories.Response] =
+    request[GetCategories.Response](
+      url(s"$baseUrl/v2/home/category").GET <<? Map(
         "mapping" -> Some("1"),
         "mode" -> mode.map(_.raw)
       ).clean
     )
 
-  def getGenres()(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
-      (baseUrl / "v2/home/genre").GET <<? Map(
+  def getGenres()(implicit ec: ExecutionContext): Future[GetGenres.Response] =
+    request[GetGenres.Response](
+      url(s"$baseUrl/v2/home/genre").GET <<? Map(
         "mapping" -> Some("1")
       ).clean
     )
 
-  private[this] def request[T](req: Req)(implicit ec: ExecutionContext, fjs: Reads[T]): Future[T] =
-    Http.default(req <@ (consumerKey, accessToken) OK as.Bytes).map(Json.parse(_).as[T])
+  private[this] def request[T](req: Req)(implicit ec: ExecutionContext, fjs: Reads[T]): Future[T] = {
+    Http.default(req <@ (consumerKey, accessToken) OK as.String).map { json =>
+      if (logger.isDebugEnabled) {
+        logger.debug(req.url)
+        logger.debug(json)
+      }
+      Json.parse(json).as[T]
+    }
+  }
 }
 
 object Zaim {

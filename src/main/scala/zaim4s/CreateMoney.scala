@@ -5,16 +5,16 @@ import java.time.LocalDateTime
 object CreateMoney {
 
   case class Response(
-      stamps: Stamps,
+      stamps: Option[Stamps],
       money: Money,
       user: User,
       requested: Long
   )
 
   final case class Stamps(
-      kiriban: Stamp,
-      repeat: Stamp,
-      first: Stamp
+      kiriban: Option[Stamp],
+      repeat: Option[Stamp],
+      first: Option[Stamp]
   )
 
   final case class Stamp(
@@ -25,9 +25,9 @@ object CreateMoney {
 
   final case class User(
       inputCount: Int,
-      repeatCount: Int,
-      dayCount: Int,
-      data_modified: LocalDateTime
+      repeatCount: Option[Int],
+      dayCount: Option[Int],
+      dataModified: LocalDateTime
   )
 
   final case class Money(
