@@ -3,7 +3,7 @@ This is a `Zaim API` binding library for the Scala language.
 
 https://dev.zaim.net
 
-supported scala version is `2.11.x` `2.12.x`
+supported scala version is `2.12.x`
 
 ## Setup
 

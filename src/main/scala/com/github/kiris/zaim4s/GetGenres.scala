@@ -1,4 +1,4 @@
-package zaim4s
+package com.github.kiris.zaim4s
 
 object GetGenres {
 

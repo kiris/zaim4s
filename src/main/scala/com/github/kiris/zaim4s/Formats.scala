@@ -1,5 +1,4 @@
-package zaim4s
-
+package com.github.kiris.zaim4s
 
 import com.github.tototoshi.play.json.JsonNaming
 import play.api.libs.json._
@@ -34,10 +33,11 @@ trait ModeFormats {
       case JsString(str) if str == Income.raw => JsSuccess(Income)
       case JsString(str) if str == Transfer.raw => JsSuccess(Transfer)
       case str => JsError(s"'${str}' mode is unknown.")
-    }, {
-      mode => JsString(mode.raw)
-    })
-
+    },
+    {
+      mode: Mode => JsString(mode.raw)
+    }
+  )
 }
 
 trait VerifyUserFormats extends DateTimeFormats {
@@ -78,7 +78,6 @@ trait GetMoneysFormats extends DateTimeFormats with ModeFormats {
   // implicit val getMoneysResponseWrites: Writes[Response] = Json.writes[Response]
 
   implicit val getMoneysGroupByReceiptResponseFormat: Format[GroupByReceiptIdResponse] = JsonNaming.snakecase(Json.format[GroupByReceiptIdResponse])
-
 }
 
 

@@ -1,5 +1,4 @@
-package zaim4s
-
+package com.github.kiris.zaim4s
 
 import java.time.LocalDate
 
@@ -8,7 +7,7 @@ import dispatch.oauth._
 import org.asynchttpclient.oauth.{ConsumerKey, RequestToken}
 import org.slf4j.LoggerFactory
 import play.api.libs.json._
-import zaim4s.Formats._
+import Formats._
 
 import scala.concurrent.ExecutionContext
 

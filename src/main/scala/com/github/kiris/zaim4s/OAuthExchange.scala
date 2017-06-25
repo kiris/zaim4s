@@ -1,4 +1,4 @@
-package zaim4s
+package com.github.kiris.zaim4s
 
 import dispatch.{Http, HttpExecutor}
 import dispatch.oauth.{Exchange, SomeCallback, SomeConsumer, SomeEndpoints, SomeHttp}
