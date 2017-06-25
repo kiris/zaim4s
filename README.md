@@ -10,7 +10,7 @@ Edit file `project/Build.scala` or `build.sbt`
 ```scala
 resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 
-libraryDependencies += "com.github.kiris" %% "zaim4s" % "0.1"
+libraryDependencies += "com.github.kiris" %% "zaim4s" % "0.1.1"
 ```
 
 ## Usage
