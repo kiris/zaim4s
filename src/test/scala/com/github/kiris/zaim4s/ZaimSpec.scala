@@ -4,10 +4,12 @@ import java.time.LocalDate
 
 import dispatch._
 import org.asynchttpclient.oauth.{ConsumerKey, RequestToken}
+import org.scalatest.Ignore
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+@Ignore
 class ZaimSpec extends org.scalatest.FreeSpec {
 
   val logger = LoggerFactory.getLogger(getClass)
