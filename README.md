@@ -28,7 +28,7 @@ val zaim = Zaim(
   ),
   new RequestToken(
     "<your access token key>",
-    "<your access token>"
+    "<your access token secret>"
   )
 )
 
