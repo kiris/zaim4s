@@ -19,7 +19,6 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
 
   private[this] val logger = LoggerFactory.getLogger(getClass)
 
-  // XXX: data_modifiedが無かった
   def verifyUser()(implicit ec: ExecutionContext): Future[JsValue] =
     request[JsValue](
       url(s"$baseUrl/v2/home/user/verify").GET
@@ -219,16 +218,13 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
     )
 
 
-  // modeは不要では
-  def getAccounts(mode: Option[Mode] = None)(implicit ec: ExecutionContext): Future[GetAccounts.Response] =
+  def getAccounts()(implicit ec: ExecutionContext): Future[GetAccounts.Response] =
   request[GetAccounts.Response](
     url(s"$baseUrl/v2/home/account").GET <<? Map(
-      "mapping" -> Some("1"),
-      "mode" -> mode.map(_.raw)
+      "mapping" -> Some("1")
     ).clean
   )
 
-  // modeが有効じゃない
   def getCategories(mode: Option[Mode] = None)(implicit ec: ExecutionContext): Future[GetCategories.Response] =
     request[GetCategories.Response](
       url(s"$baseUrl/v2/home/category").GET <<? Map(

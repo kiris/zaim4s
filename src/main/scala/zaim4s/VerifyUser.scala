@@ -23,6 +23,5 @@ object VerifyUser {
       profileModified: LocalDateTime,
       profileImageUrl: String,
       coverImageUrl: String
-      // dataModified: Option[LocalDateTime]
   )
 }
