@@ -6,7 +6,7 @@ https://dev.zaim.net
 supported scala version is `2.12.x`
 
 ## Setup
-
+Edit file `project/Build.scala` or `build.sbt`
 ```scala
 resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 
