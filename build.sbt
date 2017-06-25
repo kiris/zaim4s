@@ -1,12 +1,12 @@
-lazy val root = (project in file("."))
-  .settings(
-    name := "zaim4s",
-    organization := "com.github.kiris",
-    version := "0.1-SNAPSHOT",
-    scalaVersion := "2.12.2",
-    crossScalaVersions := Seq("2.11.8", "2.12.2")
+organization := "com.github.kiris"
+name := "zaim4s"
 
-  )
+scalaVersion := "2.12.2"
+crossScalaVersions := Seq("2.11.8", "2.12.2")
+
+homepage := Some(url("http://github.com/kiris/zaim4s"))
+licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+
 
 resolvers ++= Seq(
   "Sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
@@ -24,9 +24,8 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3" % "test"
 )
 
-
+publishMavenStyle := true
 publishArtifact in Test := false
-
 publishTo := Some(
   if (isSnapshot.value)
     Opts.resolver.sonatypeSnapshots
@@ -34,11 +33,7 @@ publishTo := Some(
     Opts.resolver.sonatypeStaging
 )
 
-publishMavenStyle := true
-
 sonatypeProfileName := "com.github.kiris"
-licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
-homepage := Some(url("http://github.com/kiris/zaim4s"))
 
 scmInfo := Some(
   ScmInfo(
@@ -56,3 +51,18 @@ developers := List(
   )
 )
 
+import ReleaseTransformations._
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  ReleaseStep(action = Command.process("publishSigned", _)),
+  setNextVersion,
+  commitNextVersion,
+  ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
+  pushChanges
+)
