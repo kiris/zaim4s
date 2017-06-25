@@ -8,7 +8,6 @@ licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 
 
 resolvers ++= Seq(
-  "Sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
   "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/",
   "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
 )
@@ -16,7 +15,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.6.0-M2",
   "net.databinder.dispatch" %% "dispatch-core" % "0.13.0",
-  "com.github.tototoshi" %% "play-json-naming" % "1.2.0-SNAPSHOT",
+  "com.github.tototoshi" %% "play-json-naming" % "1.2.0",
 
   "org.slf4j" % "slf4j-api" % "1.7.25" % "compile",
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
