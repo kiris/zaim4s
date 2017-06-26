@@ -6,7 +6,7 @@
         </encoder>
     </appender>
 
-    <logger name="zaim4s" level="debug" additivity="false">
+    <logger name="com.github.kiris.zaim4s" level="debug" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 

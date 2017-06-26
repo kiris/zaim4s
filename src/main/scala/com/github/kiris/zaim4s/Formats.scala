@@ -7,9 +7,12 @@ object Formats extends
     VerifyUserFormats with
     GetMoneysFormats with
     CreateMoneyFormats with
+    UpdateMoneyFormats with
+    DeleteMoneyFormats with
     GetAccountsFormats with
     GetCategoriesFormats with
     GetGenresFormats
+
 
 
 trait DateTimeFormats {
@@ -96,7 +99,36 @@ trait CreateMoneyFormats extends DateTimeFormats {
 
 }
 
-trait GetAccountsFormats extends ModeFormats with DateTimeFormats {
+trait UpdateMoneyFormats extends DateTimeFormats {
+  import UpdateMoney._
+
+  implicit val updateMoneyMoneyFormat: Format[Money] = JsonNaming.snakecase(Json.format[Money])
+
+  implicit val updateMoneyUserFormat: Format[User] = JsonNaming.snakecase(Json.format[User])
+
+  implicit val updateMoneyStampFormat: Format[Stamp] = JsonNaming.snakecase(Json.format[Stamp])
+
+  implicit val updateMoneyStampsFormat: Format[Stamps] = JsonNaming.snakecase(Json.format[Stamps])
+
+  implicit val updateMoneyResponseFormat: Format[Response] = JsonNaming.snakecase(Json.format[Response])
+
+}
+
+trait DeleteMoneyFormats extends DateTimeFormats {
+  import DeleteMoney._
+
+  implicit val deleteMoneyMoneyFormat: Format[Money] = JsonNaming.snakecase(Json.format[Money])
+
+  implicit val deleteMoneyUserFormat: Format[User] = JsonNaming.snakecase(Json.format[User])
+
+  implicit val deleteMoneyStampFormat: Format[Stamp] = JsonNaming.snakecase(Json.format[Stamp])
+
+  implicit val deleteMoneyStampsFormat: Format[Stamps] = JsonNaming.snakecase(Json.format[Stamps])
+
+  implicit val deleteMoneyResponseFormat: Format[Response] = JsonNaming.snakecase(Json.format[Response])
+
+}
+trait GetAccountsFormats extends DateTimeFormats {
   import GetAccounts._
 
   implicit val getAccountsAccountFormat: Format[Account] = JsonNaming.snakecase(Json.format[Account])

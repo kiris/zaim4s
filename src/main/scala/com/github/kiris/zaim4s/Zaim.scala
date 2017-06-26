@@ -145,8 +145,8 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       name: Option[String] = None,
       place: Option[String] = None,
       comment: Option[String] = None
-  )(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
+  )(implicit ec: ExecutionContext): Future[UpdateMoney.Response] =
+    request[UpdateMoney.Response](
       url(s"$baseUrl/v2/home/money/payment/$id").PUT << Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
@@ -168,8 +168,8 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       toAccountId: Option[Int] = None,
       place: Option[String] = None,
       comment: Option[String] = None
-  )(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
+  )(implicit ec: ExecutionContext): Future[UpdateMoney.Response] =
+    request[UpdateMoney.Response](
       url(s"$baseUrl/v2/home/money/income/$id").PUT << Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
@@ -185,11 +185,11 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
       id: Long,
       amount: Long,
       date: LocalDate,
-      fromAccountId: Option[Int] = None, // check
-      toAccountId: Option[Int] = None, // check
+      fromAccountId: Option[Int] = None,
+      toAccountId: Option[Int] = None,
       comment: Option[String] = None
-  )(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
+  )(implicit ec: ExecutionContext): Future[UpdateMoney.Response] =
+    request[UpdateMoney.Response](
       url(s"$baseUrl/v2/home/money/transfer/$id").PUT << Map(
         "mapping" -> Some("1"),
         "amount" -> Some(amount),
@@ -201,18 +201,18 @@ case class Zaim(consumerKey: ConsumerKey, accessToken: RequestToken) {
     )
 
 
-  def deletePayment(id: Long)(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
+  def deletePayment(id: Long)(implicit ec: ExecutionContext): Future[DeleteMoney.Response] =
+    request[DeleteMoney.Response](
       url(s"$baseUrl/v2/home/money/payment/$id").DELETE
     )
 
-  def deleteIncome(id: Long)(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
+  def deleteIncome(id: Long)(implicit ec: ExecutionContext): Future[DeleteMoney.Response] =
+    request[DeleteMoney.Response](
       url(s"$baseUrl/v2/home/money/income/$id").DELETE
     )
 
-  def deleteTransfer(id: Long)(implicit ec: ExecutionContext): Future[JsValue] =
-    request[JsValue](
+  def deleteTransfer(id: Long)(implicit ec: ExecutionContext): Future[DeleteMoney.Response] =
+    request[DeleteMoney.Response](
       url(s"$baseUrl/v2/home/money/transfer/$id").DELETE
     )
 
