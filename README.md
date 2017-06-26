@@ -3,14 +3,14 @@ This is a `Zaim API` binding library for the Scala language.
 
 https://dev.zaim.net
 
-supported scala version is `2.12.x`
+supported scala version is `2.11.x` `2.12.x`
 
 ## Setup
 Edit file `project/Build.scala` or `build.sbt`
 ```scala
 resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 
-libraryDependencies += "com.github.kiris" %% "zaim4s" % "0.1.1"
+libraryDependencies += "com.github.kiris" %% "zaim4s" % "0.1.2"
 ```
 
 ## Usage

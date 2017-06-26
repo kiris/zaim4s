@@ -27,17 +27,17 @@ trait DateTimeFormats {
 }
 
 trait ModeFormats {
-  implicit val modeFormat: Format[Mode] = Format[Mode](
-    {
+  implicit object ModeFormat extends Format[Mode] {
+    override def reads(j: JsValue): JsResult[Mode] = j match {
       case JsString(str) if str == Payment.raw => JsSuccess(Payment)
       case JsString(str) if str == Income.raw => JsSuccess(Income)
       case JsString(str) if str == Transfer.raw => JsSuccess(Transfer)
       case str => JsError(s"'${str}' mode is unknown.")
-    },
-    {
-      mode: Mode => JsString(mode.raw)
     }
-  )
+
+    override def writes(mode: Mode): JsValue =
+      JsString(mode.raw)
+  }
 }
 
 trait VerifyUserFormats extends DateTimeFormats {
