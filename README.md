@@ -1,4 +1,6 @@
 # zaim4s
+[![Build Status](https://travis-ci.org/kiris/zaim4s.svg?branch=master)](https://travis-ci.org/kiris/zaim4s)
+
 This is a `Zaim API` binding library for the Scala language.
 
 https://dev.zaim.net
