@@ -2,6 +2,7 @@ organization := "com.github.kiris"
 name := "zaim4s"
 
 scalaVersion := "2.12.2"
+crossScalaVersions := Seq("2.11.2", "2.11.8")
 
 homepage := Some(url("http://github.com/kiris/zaim4s"))
 licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
@@ -13,7 +14,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-json" % "2.6.0-M2",
+  "com.typesafe.play" %% "play-json" % "2.6.0",
   "net.databinder.dispatch" %% "dispatch-core" % "0.13.0",
   "com.github.tototoshi" %% "play-json-naming" % "1.2.0",
 
