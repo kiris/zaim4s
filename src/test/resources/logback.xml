@@ -6,11 +6,11 @@
         </encoder>
     </appender>
 
-    <logger name="com.github.kiris.zaim4s" level="debug" additivity="false">
+    <logger name="com.github.kiris.zaim4s" level="info" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 
-    <root level="info">
+    <root level="warn">
         <appender-ref ref="STDOUT" />
     </root>
 
